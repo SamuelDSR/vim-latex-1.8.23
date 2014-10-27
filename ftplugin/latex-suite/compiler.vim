@@ -343,9 +343,18 @@ function! Tex_ForwardSearchLaTeX()
 
 	" inverse search tips taken from Dimitri Antoniou's tip and Benji Fisher's
 	" tips on vim.sf.net (vim.sf.net tip #225)
-	if (has('win32') && (viewer =~? '^ *yap\( \|$\)'))
+	"if (has('win32') && (viewer =~? '^ *yap\( \|$\)'))
 
-		let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%').' '.mainfnameRoot
+		"let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%').' '.mainfnameRoot
+	"for supporting forward searching in SumatraPDF
+	if (has('win32') && (viewer =~? "^ *yap\( \|$\)" || viewer =~? "^sumatrapdf"))
+
+		if viewer =~? "^sumatrapdf"
+            let relativeFile=substitute(expand("%:p"), Tex_GetMainFileName(':p:h').'/', '','')
+            let execString = 'silent! !start SumatraPDF -reuse-instance "'.mainfnameFull.'.'.s:target.'" -forward-search "'.relativeFile.'" '. line('.')
+		else
+            let execString = 'silent! !start '. viewer.' -s '.line('.').expand('%').' '.mainfnameRoot
+		endif
 
 
 	elseif (has('macunix') && (viewer =~ '^ *\(Skim\|PDFView\|TeXniscope\)\( \|$\)'))
